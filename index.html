@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>inTheNight</title>
+	<script type="text/javascript" charset="utf-8" src="engine.js"></script>
+    <script type="text/javascript" charset="utf-8" src="game.js"></script>
+  </head>
+  <body>
+    <canvas id="viewport2d" height="400" width="640"
+	
+	style="border:1px solid #FF0000;">
+
+	</canvas>
+	<canvas id="viewport" height="400" width="640"
+	
+	style="border:1px solid #00FF00;">
+	
+	</canvas>
+    <script type="text/javascript" charset="utf-8">
+		//=================
+		// Init
+		//=================
+
+		var game = new Game();
+		game.initialize();
+
+      
+		//=================
+		// Input
+		//=================
+	  
+		function Input () { 'use strict'; // handle input
+	
+			var game = null;
+
+			this.setgame = function ( agame ) {
+				game = agame;
+			}
+				
+			// this will go from HTMLDocument!!!
+			this.checkKey = function ( e ) { 
+					
+				e = e || window.event;
+			
+				if ( game != null ) { 
+					game.pushEvent( e );
+				}
+			}
+			console.log( "Input set up!" );
+		}
+		
+		var input = new Input();
+		input.setgame( game );
+		document.onkeydown	= input.checkKey;
+		document.onkeyup	= input.checkKey;
+
+		//=================
+		// Update Loop
+		//=================
+	  
+		game.run = ( function() { // setup update loop
+			var loops = 0, skipTicks = game.INTERVAL,
+				maxFrameSkip = 10,
+				nextgameTick = ( new Date ).getTime();
+
+			return function() {
+				loops = 0;
+
+				while ( ( new Date ).getTime() > nextgameTick ) {
+					//updateStats.update();
+					game.update();
+					nextgameTick += skipTicks;
+					loops++;
+				}
+
+			// renderStats.update();
+			game.draw();
+			};
+		} ) ();
+      
+		( function() { // launch update loop
+			var onEachFrame;
+			if ( window.webkitRequestAnimationFrame ) {
+				onEachFrame = function( cb ) {
+					var _cb = function() {
+						cb();
+						webkitRequestAnimationFrame( _cb );
+					}
+					_cb();
+				};
+			} else if ( window.mozRequestAnimationFrame ) {
+				onEachFrame = function(cb) {
+					var _cb = function() {
+						cb();
+						mozRequestAnimationFrame(_cb);
+					}
+					_cb();
+				};
+			} else {
+				onEachFrame = function(cb) {
+				setInterval( cb, game.INTERVAL );
+				}
+			}
+        
+			window.onEachFrame = onEachFrame;
+		} )();
+
+		window.onEachFrame( game.run );
+	  
+		game.start();
+
+    </script>
+  </body>
+</html>
