@@ -132,6 +132,72 @@ function Game () { 'use strict';
 		
 	};
 
+	this.generateMap = function ( sizeX, sizeY ) {
+		
+		var map = new Array( sizeX );
+		for ( var x = 0; x < map.length; x++ ) {
+			map[x] = new Array( sizeY );
+			for ( var y = 0; y < map[x].length; y++ ) {
+				map[x][y] = Math.random() > 0.5;
+			}
+		}
+	
+		// clean where player spawns
+		map[3][3] = false;
+		map[3][3 - 1] = false;
+		map[3][3 + 1] = false;
+		map[3 - 1][3] = false;
+		map[3 + 1][3] = false;
+		map[3 - 1][3 - 1] = false;
+		map[3 - 1][3 + 1] = false;
+		map[3 + 1][3 - 1] = false;
+		map[3 + 1][3 + 1] = false;
+		
+		//this.cellAut( map, 5 );
+		map = this.cellAut( map, 4 );
+		map = this.cellAut( map, 5 );
+	
+		return map;
+	};
+	
+	//cellular automata
+	this.cellAut = function ( map, thr ) {
+	
+		var newMap = new Array( map.lenght );
+		for ( var x = 0; x < map.length; x++ ) {
+			newMap[x] = new Array( map[x].lenght );
+			for ( var y = 0; y < map[x].length; y++ ) {
+				newMap[x][y] = ( thr > this.countAdj( map, x, y ) );
+			}
+		}
+		return newMap;
+	};
+	
+	this.countAdj = function ( map, x, y ) {
+		var adj = 0;
+		var ind = [ [x, (y - 1)],
+					[x, (y + 1)],
+					[(x - 1), y],
+					[(x + 1), y],
+					[(x - 1), (y - 1)],
+					[(x - 1), (y + 1)],
+					[(x + 1), (y - 1)],
+					[(x + 1), (y + 1)] ];
+		
+		// check if in range and if has value
+		for ( var i = 0; i < ind.length; i++ ) {
+			var pair = ind[i];
+			if ( pair[0] >= 0 && pair[0] < map.length
+				&& pair[1] >= 0 && pair[1] < map[pair[0]].length
+				&& !map[pair[0]][pair[1]])
+			{
+				adj++;
+			}
+		}
+		
+		return adj;
+	}
+	
 	this.createMap = function () {
 		var o = false;
 		var X = true;
@@ -159,21 +225,23 @@ function Game () { 'use strict';
 		//console.log("creating map: " + map );
 		console.log( "Map created!" );
 		return map;
-	}
+	};
 
 	//===========================
 	//   Start
 	//===========================
 
 	this.start = function() {
-		this.map = this.createMap();
+		//this.map = this.createMap();
+		this.map = this.generateMap( 60, 35 );
+		//this.map = this.generateMap( 5, 5 );
 		this.initPlayer();
-	}
+	};
 
 	this.addGameObj = function( gameObj ) {
 		gameObj.game = this;
 		this.objs.push( gameObj );
-	}
+	};
 
 	this.addRect = function() {
 		this.entities.push(new Rect());
@@ -191,7 +259,7 @@ function Game () { 'use strict';
 			}
 		}
 		return object;
-	}
+	};
 
 	this.initPlayer = function () {
 		
@@ -203,7 +271,7 @@ function Game () { 'use strict';
 		player.color = "#00FF00";
 		
 		this.addGameObj( player );
-	} 
+	};
 
 	//===========================
 	//	Control
@@ -212,14 +280,14 @@ function Game () { 'use strict';
 	this.pushEvent = function( e ) {
 		//console.log( "type: " + e.type );
 		this.checkKey( e );
-	}
-		
+	};
+	
 	this.checkKey = function ( e ) { 
 		
 		this.input = this.gatherInput( e, this.input );
 		this.controlGame( e, game );
 		
-	}
+	};
 	
 	this.controlGame = function ( e ) {
 		if ( e.type === game.INPUT_EVENT_TYPE_KEYDOWN ) {
@@ -228,7 +296,7 @@ function Game () { 'use strict';
 				clearInterval( Context.intervalId );
 			}
 		}
-	}
+	};
 	
 	this.gatherInput = function ( e, input ) {
 	
@@ -282,7 +350,7 @@ function Game () { 'use strict';
 						// + input.down );
 						
 		return input;
-	}
+	};
 		
 	//===========================
 	//	Update
@@ -292,17 +360,17 @@ function Game () { 'use strict';
 	
 		var player = this.findByName( "player" );
 
-		if ( player != null ) {
+		if ( player !== null ) {
 			player.processKeys( this.input );
 		} else {
-			console.log( "Player call failed!" )
+			console.log( "Player call failed!" );
 		}
 		
 		// update gameobjects
 		for ( var i = 0; i < this.objs.length; i++ ) {
 			this.objs[i].update();
 		}
-	}		
+	};		
 
 	//===========================
 	//   Collision
@@ -311,7 +379,7 @@ function Game () { 'use strict';
 	this.obstacleAtV = function( pos ) {
 		var intPos = pos.toInt();
 		return this.obstacleAt( intPos.x , intPos.y );
-	}
+	};
 	
 	this.obstacleAt = function( x , y ) {
 		
@@ -330,7 +398,7 @@ function Game () { 'use strict';
 		}
 		//console.log( "coll: not in map range: true" );
 		return true;
-	}
+	};
 	
 	this.checkHit = function ( x, y ) {
 		
@@ -341,11 +409,11 @@ function Game () { 'use strict';
 					// + " ( " + this.map[x].length + ", " + this.map.length + " ) is:" +  hit );		
 		
 		return hit;
-	}
+	};
 	
 	this.traceV = function ( start, end ) {
 		return this.trace( start.x, start.y, end.x, end.y );
-	}
+	};
 	
 	// collision bresenham trace, returns HitInfo
 	this.trace = function ( x0, y0, x1, y1 ) {
@@ -384,10 +452,11 @@ function Game () { 'use strict';
 		if ( !( longest > shortest ) ) {
 			longest = Math.abs(h);
 			shortest = Math.abs(w);
-			if ( h < 0 )
+			if ( h < 0 ) {
 				dy2 = -1;
-			else if ( h > 0 )
+			} else if ( h > 0 ) {
 				dy2 = 1;
+			}
 			dx2 = 0;
 		}
 		
@@ -416,7 +485,7 @@ function Game () { 'use strict';
 		}
 		
 		return hitInfo;
-	}
+	};
 	
 	//===========================
 	//   Drawing, peek engine.js for spicy details
@@ -426,7 +495,7 @@ function Game () { 'use strict';
 	
 		this.topDown.draw();
 		this.scanLine.draw();
-	}
+	};
 	
 	// Log that everything was ok.
 	console.log( "Game assembled!" );
@@ -498,7 +567,7 @@ function GameObject( name ) {
 	this.pos = new Vec2();
 	this.width = 10;
 	this.height = 10;
-	this.color = "#FF00FF";
+	this.color = 0xFF00FF;
 	
 	this.vel = new Vec2();
 	
@@ -558,7 +627,7 @@ function GameObject( name ) {
 		//console.log( "change: " + newVel );
 		newVel.mult( accel );
 		this.vel = newVel;
-	}
+	};
 	
 	this.setAngle = function ( angle ) {
 		this.angle = angle % ( 2 * Math.PI );
@@ -571,12 +640,12 @@ function GameObject( name ) {
 		
 		this.right = unitVecFromAngle( this.right, this.angle + 0.5 * Math.PI );
 		//console.log( " dir " + this.dir + " right " + this.right );
-	}
+	};
 	
 	this.update = function () {
 		this.move();
 		// console.log("angle:" + this.angle );
-	}
+	};
 	
 	this.move = function () {
 		
@@ -591,7 +660,7 @@ function GameObject( name ) {
 		if ( !collide ) {
 			this.pos = newPos;
 		}
-	}
+	};
 }
 
 //

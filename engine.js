@@ -48,59 +48,59 @@
 //					 __/ |
 //					|___/ 
 //
-//====================================================================
+//=============================================================================
 //	Use the force, use the imagination!
-//====================================================================
+//=============================================================================
 
 function Engine ( aGame, canvas ) { 'use strict';
 	
 	this.createContext = function ( canvas ) {
 		var ctx = canvas.getContext( "2d" );
 		return ctx;
-	}
+	};
 	
-	//=================
+	//===================
 	//	Fields
-	//=================
+	//===================
 	
 	this.game = aGame;							// Game
 	this.c = canvas;							// Canvas
 	this.ctx = this.createContext( canvas );	// Canvas drawing Context "2d"
 	this.ready = true;
 
-	//=================
+	//===================
 	//	Constructor
-	//=================
+	//===================
 	
-	if ( this.c == null || this.ctx == null ) {
+	if ( this.c === null || this.ctx === null ) {
 		console.log( "Engine: canvas or context not setup!" );
 		this.ready = false;
 		return this.ready;
 	}
 		
-	if ( this.game == null ) {
+	if ( this.game === null ) {
 		console.log( "Engine: game property is not set! You will facepalm in 3... 2... 1... " );
 		this.ready = false;
 		return this.ready;
 	}
 	
-	//=================
+	//===================
 	//	Methods
-	//=================	
+	//===================	
 	
 	this.createContext = function ( canvas ) {
 		var ctx = canvas.getContext( "2d" );
 		return ctx;
-	}
+	};
 		
 	this.draw = function () {
 		throw new Error( "Abstract!" );
 		//console.log( "absrtract" );
-	}
+	};
 		
 	this.draw2 = function () {
 		console.log( "inherited2" );
-	}
+	};
 }
 
 //
@@ -113,17 +113,17 @@ function Engine ( aGame, canvas ) { 'use strict';
 //				  | |                             
 //				  |_|                             
 //
-//====================================================================
+//=============================================================================
 //	What a living world may mean when you can not have clear VISION
-//====================================================================
+//=============================================================================
 
 function TopDown ( aGame, canvas ) { 'use strict';
 	
 	this.parent.constructor.call( this, aGame, canvas );
 	
-	//=================
+	//===================
 	//	Methods
-	//=================	
+	//===================	
 	
 	this.draw = function () {
 		this.ctx.clearRect( 0, 0, this.c.width, this.c.height );
@@ -134,7 +134,7 @@ function TopDown ( aGame, canvas ) { 'use strict';
 		//this.testDrawLines();
 		//this.testScanLine();
 		//this.drawDot( new Vec2( 50, 70), 2, 0x00FFFF );
-	}
+	};
 	
 	this.drawMap = function () {
 		this.ctx.fillStyle = this.game.MAP_BG_COLOR;
@@ -153,13 +153,13 @@ function TopDown ( aGame, canvas ) { 'use strict';
 				}
 			}
 		}
-	}
+	};
 	
 	this.drawObjects = function () {
 		for ( var i = 0; i < this.game.objs.length; i++ ) {
 			this.drawObject( this.game.objs[i] );
 		}
-	}
+	};
 	
 	this.drawObject = function ( obj ) {
 		
@@ -175,7 +175,7 @@ function TopDown ( aGame, canvas ) { 'use strict';
 		this.drawDotV( obj.pos.toInt(), obj.width / 2, obj.color );
 		
 		//console.log( "drawing: " + obj.name + " " + obj.pos.toInt() );
-	}
+	};
 	
 	this.testDrawLines = function () {
 		
@@ -191,23 +191,23 @@ function TopDown ( aGame, canvas ) { 'use strict';
 		
 		this.drawLine( 0, 0, 200, 0, color );	// t-
 		this.drawLine( 0, 100, 200, 100, color );	// b-
-	}
+	};
 	
 	this.drawDotV = function ( pos, r, color ) {
 		this.drawDot( pos.x, pos.y, r, color );
-	}
+	};
 	
 	this.drawDot = function ( x, y, r, color ) {
 		
 		this.ctx.beginPath();
 		this.ctx.arc( x, y, r, 0, 2 * Math.PI, false);
-		this.ctx.fillStyle = color;
+		this.ctx.fillStyle = "#00FF00";
 		this.ctx.fill();
-	}
+	};
 	
 	this.drawLineVC = function ( start, end, color ) {
 		this.drawLine( start.x, start.y, end.x, end.y, color );
-	}
+	};
 	
 	this.drawLineC = function ( x0, y0, x1, y1, color ) {
 	
@@ -215,7 +215,7 @@ function TopDown ( aGame, canvas ) { 'use strict';
 		this.ctx.lineWidth = 1;
 		
 		this.drawLine( x0, y0, x1, y1 );
-	}
+	};
 	
 	this.drawLine = function ( x0, y0, x1, y1 ) {
 	
@@ -223,7 +223,7 @@ function TopDown ( aGame, canvas ) { 'use strict';
 		this.ctx.moveTo( x0, y0 );
 		this.ctx.lineTo( x1, y1 );
 		this.ctx.stroke();
-	}
+	};
 	
 	this.testScanLine = function () {
 	
@@ -242,7 +242,7 @@ function TopDown ( aGame, canvas ) { 'use strict';
 			color = ( color - 10 ) & 0xFF;
 			//console.log( "#" + "00" + "00" + color.toString(16) );
 		}
-	}
+	};
 }
 
 TopDown.prototype = Object.create( Engine.prototype );
@@ -259,9 +259,9 @@ TopDown.prototype.parent = Engine.prototype;
 //		\____/ \___\__,_|_| |_\_____/_|_| |_|\___|
 //
 //
-//====================================================================
+//=============================================================================
 //	What a living world may mean when you can not have a tender TOUCH
-//====================================================================
+//=============================================================================
 
 function ScanLine ( aGame, canvas ) { 'use strict';
 	
@@ -269,11 +269,11 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 	
 	this.setupImg = function ( context ) {
 		return context.createImageData( this.c.width, this.c.height );
-	}
+	};
 	
-	//=================
+	//===================
 	//	Fields
-	//=================	
+	//===================	
 	
 	this.imgTarget = null;
 	this.topDown = null;
@@ -312,7 +312,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 	}
 	
 	if ( this.scansConst === 0 ) {
-		this.scans = parseInt( this.c.width * this.scansFactor );
+		this.scans = justParseInt( this.c.width * this.scansFactor );
 	} else {
 		this.scans = this.scansConst;
 	}
@@ -323,15 +323,15 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 	this.colorCeiling.fromHex( 0x444466 );
 	this.colorFloor.fromHex( 0xDDDDFF );
 	
-	//=================
+	//===================
 	//	Constructor
-	//=================	
+	//===================	
 	
 	if ( this.ready ) {
 		this.imgTarget = this.setupImg( this.ctx );
 		
-		if ( this.imgTarget == null ) {
-			this.ready = false
+		if ( this.imgTarget === null ) {
+			this.ready = false;
 			return this.ready;
 		}
 	}
@@ -340,9 +340,9 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		console.log( "ScanLine: you may want assign topDown field" );
 	}
 	
-	//=================
+	//===================
 	//	Methods
-	//=================	
+	//===================	
 	
 	this.draw = function () {
 		
@@ -359,7 +359,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		this.drawDusts();
 		
 		this.ctx.putImageData( this.imgTarget, 0, 0 );
-	}
+	};
 	
 	this.testFill = function () {
 		
@@ -370,7 +370,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		}
 				
 		this.ctx.putImageData( this.imgTarget, 0, 0 );		
-	}
+	};
 	
 	this.testDrawLine = function () {
 		
@@ -385,7 +385,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		
 		this.drawLine( this.imgTarget, 0, 0, 	200, 0, 	color );	// t-
 		this.drawLine( this.imgTarget, 0, 100, 	200, 100, 	color );	// b-
-	}	
+	};	
 	
 	this.drawViewport = function () {
 		
@@ -439,7 +439,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 			var hitInfo = this.game.traceV( intPos, currTarget.toInt() );
 			var depth = lineOfSight;
 			if ( hitInfo.hit ) {
-				this.topDown.drawDotV( hitInfo.pos.toInt(), 1, 0xFFFF00 );
+				this.topDown.drawDotV( hitInfo.pos.toInt(), 1,0xFFFF00 );
 				
 				//depth = this.frustrumDepth( player, hitInfo.pos );
 				//var depth2 = this.perpendicularDepth( player, hitInfo.pos );
@@ -452,27 +452,27 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		}
 		
 		this.drawStripes( stripes );
-	}
+	};
 	
 	this.frustrumDepth = function ( player, point ) {
 		var tmpD = new Vec2( player.pos );
 		tmpD.sub( point );
 		return VSize( tmpD );
-	}
+	};
 	
 	this.perpendicularDepth = function ( player, point ) {
 		var right = new Vec2( player.right );
 		right.mult( 10 );
 		right.add( player.pos );
 		return distToLine( point, player.pos, right );
-	}
+	};
 	
 	this.createTargetVec = function ( angle, lineOfSight ) {
 		var target = new Vec2();
 		target.unitFromAngle( angle );
 		target.mult( lineOfSight );
 		return target;
-	}
+	};
 	
 	this.drawWallStripe = function ( i, depth, lineOfSight ) {
 		
@@ -485,24 +485,25 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		var height = this.c.height;		
 		
 		var wallHeight = height * this.wallHeight( depth / lineOfSight );
-		var hStart = parseInt( ( height - wallHeight ) / 2);
+		var hStart = justParseInt( ( height - wallHeight ) / 2 );
 		var hEnd = hStart + wallHeight;
 		
-		hStart = parseInt( hStart );
-		hEnd = parseInt( hEnd );
+		hStart = justParseInt( hStart );
+		hEnd = justParseInt( hEnd );
 		
 		var x = ( this.c.width - 1 ) / this.scans;
 		
-		var stripe = new VStripe( parseInt( x * i ), hStart, hEnd, depth, wallColor );
+		var stripe = new VStripe( justParseInt( x * i ), hStart, hEnd, depth, wallColor );
 		// this.drawStripe( stripe );
 		return stripe;
-	}
+	};
 	
 	this.wallHeight = function ( depth ) {
 		
 		var maxWallHeight = this.maxWallHeight;
 		var minWallHeight = this.minWallHeight;
-		var height = maxWallHeight * ( 1 - depth );
+		//var height = maxWallHeight * ( 1 - depth );
+		var height = maxWallHeight * ( 1 - Math.sin( depth ) ); // works
 		height = Math.max( height, minWallHeight );
 		
 		//height *= 
@@ -510,7 +511,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		//console.log( "d " + depth + " h " + height );
 		
 		return height;
-	}
+	};
 	
 	this.drawStripes = function ( stripes ) {
 	
@@ -527,7 +528,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 			//this.drawStripe( currStr );
 			prevStr = currStr;
 		}
-	}
+	};
 	
 	this.lerpStripeRect = function ( stripe1, stripe2) {
 		// console.log( " lrs" +  stripe1 + " " + stripe2 );
@@ -554,7 +555,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 			
 			this.drawStripe( currStripe );
 		}
-	}
+	};
 	
 	this.drawStripe = function ( stripe ) {
 		
@@ -575,7 +576,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		this.drawLineC( this.imgTarget, stripe.x, stripe.hStart, stripe.x, stripe.hEnd, cs );	
 		// floor
 		this.drawLineC( this.imgTarget, stripe.x, stripe.hEnd, stripe.x, this.c.width, cf );	
-	}
+	};
 	
 	this.scanLine = function () {
 		
@@ -638,13 +639,13 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 			var hStart = height - wallHeight;
 			var hEnd = wallHeight;
 			
-			hStart = parseInt( hStart );
-			hEnd = parseInt( hEnd );
+			hStart = justParseInt( hStart );
+			hEnd = justParseInt( hEnd );
 			
 			//this.drawLineC( this.imgTarget, width / 2, hStart, width / 2, hEnd,  wallColor );
 		}
 		//console.log( "trace: " + hitInfo.hit );
-	}
+	};
 	
 	this.testScanLine = function () { 
 		
@@ -661,15 +662,15 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 			//this.drawLine( this.imgTarget, x, 0, x, width, color );
 			//this.drawLine( this.imgTarget, x, 50, x, 100, color );
 		}
-	}
+	};
 	
 	this.setPixelVC = function ( img, pos, rgba ) {
 		return this.setPixel( img, pos.x, pos.y, rgba.r, rgba.g, rgba.b, rgba.a );
-	}
+	};
 	
 	this.setPixelC = function ( img, x, y, rgba ) {
 		return this.setPixel( img, x, y, rgba.r, rgba.g, rgba.b, rgba.a );
-	}
+	};
 	
 	this.setPixel = function ( img, x, y, r, g, b, a ) {
 		var index = ( x + y * img.width ) * 4;
@@ -685,7 +686,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 										 // + img.data[index + 3] );
 		
 		return img;
-	}
+	};
 	
 	this.drawDusts = function () {
 		for( var i = 0; i < this.dusts.length; i++ ) {
@@ -708,7 +709,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 				}
 			}
 		}
-	}
+	};
 	
 	this.addToPixel = function ( img, x, y, r, g, b, a ) {
 		var index = ( x + y * img.width ) * 4;
@@ -724,11 +725,11 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 										 // + img.data[index + 3] );
 		
 		return img;
-	}
+	};
 	
 	this.drawLineVC = function ( img, start, end, rgba ) {
 		this.drawLineC( img, start.x, start.y, end.x, end.y, rgba );
-	}
+	};
 	
 	// bresenham java port:
 	this.drawLineC = function ( img, x0, y0, x1, y1, rgba ) {
@@ -767,10 +768,11 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		if ( !( longest > shortest ) ) {
 			longest = Math.abs(h);
 			shortest = Math.abs(w);
-			if ( h < 0 )
+			if ( h < 0 ) {
 				dy2 = -1;
-			else if ( h > 0 )
+			} else if ( h > 0 ) {
 				dy2 = 1;
+			}
 			dx2 = 0;
 		}
 		
@@ -801,7 +803,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 				y += dy2;
 			}
 		}
-	}
+	};
 }
 
 ScanLine.prototype = Object.create( Engine.prototype );
@@ -820,9 +822,9 @@ ScanLine.prototype.parent = Engine.prototype;
 //							   | |         
 //							   |_|         
 //
-//====================================================================
+//=============================================================================
 //	Elementals of OUR VISIONS
-//====================================================================
+//=============================================================================
 
 function VStripe( x, hStart, hEnd, depth, color ) { 
 
@@ -843,9 +845,9 @@ function VStripe( x, hStart, hEnd, depth, color ) {
 //		\ \_/ /  __/ (__./ /___
 //		 \___/ \___|\___\_____/
 //                       
-//====================================================================
+//=============================================================================
 //	The true spirit of warrior will be found were courage is usually lost
-//====================================================================
+//=============================================================================
 // That moment when you realize:
 // http://memegenerator.net/instance/42852477
 // btw. ...and multiple constructors without tricks would be awesome too
@@ -872,8 +874,8 @@ function Vec2 ( foo ) {
 	
 	this.toInt = function() {
 		var vect = new Vec2( this );
-		vect.x = parseInt( vect.x );
-		vect.y = parseInt( vect.y );
+		vect.x = justParseInt( vect.x );
+		vect.y = justParseInt( vect.y );
 		return vect;
 	}
 	
@@ -884,7 +886,7 @@ function Vec2 ( foo ) {
 	
 	this.normal = function () {
 		var magn = VSize( this );
-		if ( magn == 0.0 ) {
+		if ( magn === 0.0 ) {
 			magn = 0.000000001;
 		}
 		
@@ -990,9 +992,9 @@ Vec2.prototype.ZERO = new Vec2( [ 0, 0 ] );
 //		| |\ \| |_\ \| |_/ / | | |
 //		\_| \_|\____/\____/\_| |_/
 //
-//====================================================================
+//=============================================================================
 //	Colors, colors, colors, need mhoar metal black
-//====================================================================
+//=============================================================================
 
 /// may need more testing
 function RGBA ( rgba ) {
@@ -1006,7 +1008,7 @@ function RGBA ( rgba ) {
 		this.r = rgba.r;
 		this.g = rgba.g;
 		this.b = rgba.b;
-		this.a = rgba.a;;
+		this.a = rgba.a;
 	}
 	
 	this.fromHex = function ( hex ) {
@@ -1057,7 +1059,7 @@ function RGBA ( rgba ) {
 	
 	this.addNoise = function ( max ) {
 		var noised = new RGBA( this );
-		noised.add( parseInt( max * 2 * ( 0.5 - Math.random() ) ) );
+		noised.add( justParseInt( max * 2 * ( 0.5 - Math.random() ) ) );
 		return noised;
 	}
 	
@@ -1096,9 +1098,9 @@ function RGBA ( rgba ) {
 	}
 }
 
-//====================================================================
+//=============================================================================
 //	Inspired by playing Call of Duty(R) 4: Modern Warfare recently...
-//====================================================================
+//=============================================================================
 
 function Dust( ) {
 	
@@ -1122,8 +1124,8 @@ function Dust( ) {
 	this.update = function () {
 		
 		if ( this.delay > this.maxDelay ) {
-			this.x += parseInt( 2 * 2 * ( 0.5 - Math.random() ) );
-			this.y += parseInt( 4 * 2 * ( 0.5 - Math.random() ) );
+			this.x += justParseInt( 2 * 2 * ( 0.5 - Math.random() ) );
+			this.y += justParseInt( 4 * 2 * ( 0.5 - Math.random() ) );
 			this.delay = 0;
 		}
 		
@@ -1132,10 +1134,10 @@ function Dust( ) {
 	}
 	
 	this.rand = function ( minX, maxX, minY, maxY ) {
-		this.x = parseInt( ( maxX - minX ) * Math.random() ) ;
-		this.y = parseInt( ( maxY - minY ) * Math.random() ) ;
+		this.x = justParseInt( ( maxX - minX ) * Math.random() ) ;
+		this.y = justParseInt( ( maxY - minY ) * Math.random() ) ;
 		
-		var size = parseInt( 8 * Math.random() ) ;
+		var size = justParseInt( 8 * Math.random() ) ;
 		this.width += size;
 		this.height += size;
 		
@@ -1148,13 +1150,13 @@ function Dust( ) {
 		//this.color2.fromHex( 0x101010 );
 		//this.color1.fromHex( 0x505050 );
 		
-		var colorAdd = parseInt( size * Math.random() );
+		var colorAdd = justParseInt( size * Math.random() );
 		this.color1.add( colorAdd );
 		//console.log( "c1 " + this.color2.toHexStr() + " " + this.color1.toHexStr() );
 		
-		this.maxDelay += parseInt( this.maxDelay * Math.random() ) ;
-		this.delay = parseInt( this.maxDelay * Math.random() ) ;
-		this.maxLifetime = this.maxDelay + parseInt( 10 * this.maxDelay * Math.random() ) ;
+		this.maxDelay += justParseInt( this.maxDelay * Math.random() ) ;
+		this.delay = justParseInt( this.maxDelay * Math.random() ) ;
+		this.maxLifetime = this.maxDelay + justParseInt( 10 * this.maxDelay * Math.random() ) ;
 		
 	}
 }
@@ -1166,9 +1168,9 @@ function Dust( ) {
 //	| |  | | | | | | | (_) | | | | | | | |_| | | | | (__| |_| | (_) | | | \__ \
 //	\_|  |_/_|_| |_|_|\___/|_| |_| \_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
 //                                                                                                                                                   
-//====================================================================
+//=============================================================================
 //	Come to me my minions, my little slaves
-//====================================================================
+//=============================================================================
 
 // have you known that const is not in language standard :CCCC
 function RAD_TO_DEG ( a ) {
@@ -1179,7 +1181,7 @@ function DEG_TO_RAD ( a ) {
 	return a * 0.017453292519943296;	// Pi / 180
 }
 
-// returns: alpha == 0 -> from, 1 -> to
+// returns: alpha === 0 -> from, 1 -> to
 function lerp( from, to, alpha ) {
 	return from * ( 1 - alpha ) + to * alpha;
 }
@@ -1217,7 +1219,7 @@ function distToLineSquared( p, v, w ) {
 	
 	var l2 = dist2( v, w );
 	
-	if ( l2 == 0 ) {
+	if ( l2 === 0 ) {
 		return dist2( p, v );
 	}
 	
@@ -1252,4 +1254,8 @@ function clamp( a, min, max ) {
 // http://stackoverflow.com/questions/4775722/javascript-check-if-object-is-array
 function isArray( arrr ) {
 	return Object.prototype.toString.call( arrr ) === '[object Array]';
+}
+
+function justParseInt( a ) {
+	return parseInt( a, 10 );
 }

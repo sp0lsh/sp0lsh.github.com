@@ -2,112 +2,149 @@
 <html>
   <head>
     <title>inTheNight</title>
+	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 	<script type="text/javascript" charset="utf-8" src="engine.js"></script>
     <script type="text/javascript" charset="utf-8" src="game.js"></script>
   </head>
   <body>
-    <canvas id="viewport2d" height="400" width="640"
+    <script type="text/javascript" >
 	
-	style="border:1px solid #FF0000;">
-
-	</canvas>
-	<canvas id="viewport" height="400" width="640"
+	//=================
+	// PreInit
+	//=================
 	
-	style="border:1px solid #00FF00;">
+	var game = new Game();
 	
-	</canvas>
-    <script type="text/javascript" charset="utf-8">
-		//=================
-		// Init
-		//=================
-
-		var game = new Game();
-		game.initialize();
-
-      
-		//=================
-		// Input
-		//=================
-	  
-		function Input () { 'use strict'; // handle input
+	//=================
+	// Some stuff to get task done for course
+	//=================
 	
-			var game = null;
+	function Settings ( w, h ) {
+		this.viewW = w;
+		this.viewH = h;
+	};
+	
+	var settings = new Settings( 640, 400 );
 
-			this.setgame = function ( agame ) {
-				game = agame;
-			}
-				
-			// this will go from HTMLDocument!!!
-			this.checkKey = function ( e ) { 
+	// document.writeln(); adds new line after writting ;/ 
+	var canvas1 = " <canvas id=\"" + game.CANVAS_TD_ID + "\" height=\""
+					+ settings.viewH + "\" width=\""
+					+ settings.viewW + "\" style=\"border:1px solid #FF0000;\"></canvas> ";
+	var canvas2 = " <canvas id=\"" + game.CANVAS_SL_ID + "\" height=\""
+					+ settings.viewH + "\" width=\""
+					+ settings.viewW + "\" style=\"border:1px solid #FF0000;\"></canvas> ";
 					
-				e = e || window.event;
-			
-				if ( game != null ) { 
-					game.pushEvent( e );
-				}
-			}
-			console.log( "Input set up!" );
+	document.writeln( canvas1 + canvas2 );
+	
+	document.writeln( "<button id=\"cheatbtn\" >Enter cheat</button>" );
+	
+	function cheat() {
+		var res = prompt( "How much gold to add:", "1000" );
+
+		if ( res !== null ) {
+			window.alert( "Ha, you wish you had " + res + " more gold!" );
 		}
+	}
+	
+	function setupButton() {
+		var button = document.getElementById( "cheatbtn" );
+		button.addEventListener( "click", cheat );
+	};
+	
+	setupButton();
+	
+	//=================
+	// Init
+	//=================
+	
+	
+	game.initialize();
+
+  
+	//=================
+	// Input
+	//=================
+  
+	function Input () { 'use strict'; // handle input
+
+		var game = null;
+
+		this.setgame = function ( agame ) {
+			game = agame;
+		};
+			
+		// this will go from HTMLDocument!!!
+		this.checkKey = function ( e ) { 
+				
+			e = e || window.event;
 		
-		var input = new Input();
-		input.setgame( game );
-		document.onkeydown	= input.checkKey;
-		document.onkeyup	= input.checkKey;
-
-		//=================
-		// Update Loop
-		//=================
-	  
-		game.run = ( function() { // setup update loop
-			var loops = 0, skipTicks = game.INTERVAL,
-				maxFrameSkip = 10,
-				nextgameTick = ( new Date ).getTime();
-
-			return function() {
-				loops = 0;
-
-				while ( ( new Date ).getTime() > nextgameTick ) {
-					//updateStats.update();
-					game.update();
-					nextgameTick += skipTicks;
-					loops++;
-				}
-
-			// renderStats.update();
-			game.draw();
-			};
-		} ) ();
-      
-		( function() { // launch update loop
-			var onEachFrame;
-			if ( window.webkitRequestAnimationFrame ) {
-				onEachFrame = function( cb ) {
-					var _cb = function() {
-						cb();
-						webkitRequestAnimationFrame( _cb );
-					}
-					_cb();
-				};
-			} else if ( window.mozRequestAnimationFrame ) {
-				onEachFrame = function(cb) {
-					var _cb = function() {
-						cb();
-						mozRequestAnimationFrame(_cb);
-					}
-					_cb();
-				};
-			} else {
-				onEachFrame = function(cb) {
-				setInterval( cb, game.INTERVAL );
-				}
+			if ( game !== null ) { 
+				game.pushEvent( e );
 			}
-        
-			window.onEachFrame = onEachFrame;
-		} )();
+		};
+		
+		console.log( "Input set up!" );
+	}
+	
+	var input = new Input();
+	input.setgame( game );
+	document.onkeydown	= input.checkKey;
+	document.onkeyup	= input.checkKey;
 
-		window.onEachFrame( game.run );
-	  
-		game.start();
+	//=================
+	// Update Loop
+	//=================
+  
+	game.run = ( function() { // setup update loop
+		var loops = 0, skipTicks = game.INTERVAL,
+			maxFrameSkip = 10,
+			nextgameTick = ( new Date ).getTime();
+
+		return function() {
+			loops = 0;
+
+			while ( ( new Date ).getTime() > nextgameTick ) {
+				//updateStats.update();
+				game.update();
+				nextgameTick += skipTicks;
+				loops++;
+			}
+
+		// renderStats.update();
+		game.draw();
+		};
+	} ) ();
+  
+	( function() { // launch update loop
+		var onEachFrame;
+		if ( window.webkitRequestAnimationFrame ) {
+			onEachFrame = function( cb ) {
+				var _cb = function() {
+					cb();
+					webkitRequestAnimationFrame( _cb );
+				};
+				_cb();
+			};
+		} else if ( window.mozRequestAnimationFrame ) {
+			onEachFrame = function(cb) {
+				var _cb = function() {
+					cb();
+					mozRequestAnimationFrame(_cb);
+				};
+				_cb();
+			};
+		} else {
+			onEachFrame = function(cb) {
+				setInterval( cb, game.INTERVAL );
+			};
+		}
+	
+		window.onEachFrame = onEachFrame;
+	} )();
+
+	window.onEachFrame( game.run );
+  
+	game.start();
 
     </script>
   </body>
