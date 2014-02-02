@@ -1,3 +1,29 @@
+//====================================================================
+// 
+//	Copyright (c) 2013, All Right Reserved, spolsh, triget, antiad
+//
+//	THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//	IND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//	MPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//	ARTICULAR PURPOSE.
+//
+//
+//	Event:			TK Jame Gam vol. 1
+//	Content:		remake of Stat Wars vector Atari game
+//
+//	Author:			Programmer: Michał 'spolsh 'Kłoś
+//					Graphics:	Oskar 'triget' Szwajkowski
+//					Designer:	Adam 'antiad' Żółtowski
+//
+//	Email:			michal.m.klos@gmail.com
+//
+//	Framework:		HTML5 Canvas 
+//	Date started:	31.01.2014 at 22:00
+// 
+//
+//====================================================================
+
+
 function Onload() {
 
 	var game = new Game();
