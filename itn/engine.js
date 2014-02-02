@@ -163,7 +163,6 @@ function TopDown ( aGame, canvas ) { 'use strict';
 	
 	this.drawObject = function ( obj ) {
 		
-		
 		// calc the center of obj
 		// var startX, startY;
 		// startX = obj.x - Math.floor( obj.width / 2 );
@@ -279,14 +278,16 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 	this.topDown = null;
 	
 	this.scansFactor = 1;
-	this.scansFactor = 0.5;
+	//this.scansFactor = 0.5;
 	//this.scansFactor = 0.1;
 	this.scansConst = 0;
-	//this.scansConst = 5;
+	// this.scansConst = 5;
+	// this.scansConst = 15;
+	// this.scansConst = 50;
 	this.scans = 0;
 	
-	this.minWallHeight = 0.05;
-	this.maxWallHeight = 0.95;
+	this.minWallHeight = 0.01;
+	this.maxWallHeight = 1;
 	
 	this.colorNear = new RGBA();
 	this.colorFar = new RGBA();
@@ -294,22 +295,22 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 	this.colorCeiling = new RGBA();
 	this.colorFloor = new RGBA();
 	
-	this.addNoise = true;
-	this.addNoise = false;
-	this.maxNoise = 0x03;
-	//this.maxNoise = 0x10;
+	// this.addNoise = true;
+	// this.addNoise = false;
+	// this.maxNoise = 0x03;
+	// //this.maxNoise = 0x10;
 	
-	this.addDust = true;
-	this.maxDust = 0x03;
-	this.maxDustQuota = 1000;
-	//this.maxDustQuota = 2000;
-	this.dusts = [];
+	// this.addDust = true;
+	// this.maxDust = 0x03;
+	// this.maxDustQuota = 1000;
+	// //this.maxDustQuota = 2000;
+	// this.dusts = [];
 	
-	for ( var i = 0; i < this.maxDustQuota; i++ ) {
-		var dust = new Dust();
-		dust.rand( 0, this.c.width, 0, this.c.height );
-		this.dusts.push( dust );
-	}
+	// for ( var i = 0; i < this.maxDustQuota; i++ ) {
+		// var dust = new Dust();
+		// dust.rand( 0, this.c.width, 0, this.c.height );
+		// this.dusts.push( dust );
+	// }
 	
 	if ( this.scansConst === 0 ) {
 		this.scans = justParseInt( this.c.width * this.scansFactor );
@@ -352,11 +353,12 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		// this.testFill();
 		// this.testDrawLine();
 	
-		this.drawViewport();
+		this.drawViewport2();
+		//this.drawViewport();
 		
-		this.scanLine();
+		//this.scanLine();
 		
-		this.drawDusts();
+//		this.drawDusts();
 		
 		this.ctx.putImageData( this.imgTarget, 0, 0 );
 	};
@@ -387,6 +389,115 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		this.drawLine( this.imgTarget, 0, 100, 	200, 100, 	color );	// b-
 	};	
 	
+	
+	this.drawViewport2 = function () {
+	
+		var player = this.game.findByName( "player" );
+		
+		if ( !player ) {
+			//console.log( "DrawViewport: no player found!" );
+			return;
+		}
+		
+		var comp = player.slComp; // pos, dir, right, fov, near, far
+		
+		//
+		// TEST
+		//
+		
+		this.drawFrustrum( comp );
+		
+		//
+		// RAYCAST
+		//
+		
+		var pos = comp.pos;
+		var intPos = pos.toInt();
+		var far = comp.far;
+	
+		var locBeginPlane = new Vec2( comp.dir );
+		var tmp = new Vec2( comp.right );
+		tmp.mult( comp.plane );
+		locBeginPlane.add( tmp );
+		
+		var locEndPlane = new Vec2( comp.dir );
+		var tmp2 = new Vec2( comp.right );
+		tmp2.mult( -comp.plane );
+		locEndPlane.add( tmp2 );
+		
+		//console.log( locBeginPlane + ", " + locEndPlane );
+		
+		var stripes = [];
+		var alpha = 0;
+		var scans = this.scans;
+		var castDir = new Vec2();
+		var angle;
+		for ( var i = 0; i < scans; i++ ) {
+			
+			alpha = 1 - i / scans;
+			angle = ( alpha - 0.5 ) * comp.fov ;
+			// console.log( i + " " + angle );
+			//console.log( i + " " + scans + " " + alpha );
+			
+			castDir.lerp( locBeginPlane, locEndPlane, alpha );
+			
+			var depth = far;
+			var hitInfo = this.game.traceV( intPos, castDir.mult( comp.far ).add( pos ).toInt() );
+			if ( hitInfo.hit ) {
+				if ( this.topDown ) {
+					this.topDown.drawDotV( hitInfo.pos.toInt(), 1,0xFFFF00 );
+				}
+				
+				depth = this.frustrumDepth( pos, hitInfo.pos );
+				depth *= Math.cos( DEG_TO_RAD( angle ) ); // correction
+				//console.log( "d1: " + depth );
+			}
+			
+			//console.log( i + " "  + depth );
+			stripes.push( this.createWallStripe( i, depth, comp.far - comp.near ) );
+		}
+		
+		this.drawStripes( stripes );
+	
+	}
+	
+	this.drawFrustrum = function ( comp ) {
+	
+		// pos, dir, right, fov, near, far
+		var pos = comp.pos;
+		var intPos = pos.toInt();
+		var far = comp.far;
+	
+		// var centerPlane = new Vec2( comp.dir );
+		// centerPlane.mult( comp.near * 10 );
+		// centerPlane.add( pos );
+		// this.topDown.drawLineVC( intPos, centerPlane.toInt(), 0xFF0000 );
+	
+		var beginPlane = new Vec2( comp.dir );
+		beginPlane.mult( comp.near );
+		var tmp = new Vec2( comp.right );
+		tmp.mult( comp.plane );
+		beginPlane.add( tmp );
+		beginPlane.mult( comp.far ); // just to see
+		beginPlane.add( pos );
+
+		if ( this.topDown ) {
+			this.topDown.drawLineVC( intPos, beginPlane.toInt(), 0xFF0000 );
+		}
+		
+		var endPlane = new Vec2( comp.dir );
+		endPlane.mult( comp.near );
+		var tmp2 = new Vec2( comp.right );
+		tmp2.mult( -comp.plane );
+		endPlane.add( tmp2 );
+		endPlane.mult( comp.far ); // just to see
+		endPlane.add( pos );
+		
+		if ( this.topDown ) {
+			this.topDown.drawLineVC( intPos, endPlane.toInt(), 0xFF0000 );
+		}
+	}
+	
 	this.drawViewport = function () {
 		
 		var player = this.game.findByName( "player" );
@@ -398,15 +509,15 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		
 		var pos = player.pos;
 		var intPos = pos.toInt();
-		var lineOfSight = player.lineOfSight;
+		var far = player.far;
 		
 		var scans = this.scans;
 		
 		var startAngle = player.angle - DEG_TO_RAD( player.fov / 2 );
 		var endAngle = player.angle + DEG_TO_RAD( player.fov / 2 );
 				
-		var startDir = this.createTargetVec( startAngle, lineOfSight );
-		var endDir = this.createTargetVec( endAngle, lineOfSight );
+		var startDir = this.createTargetVec( startAngle, far );
+		var endDir = this.createTargetVec( endAngle, far );
 		
 		// draw frustrum:
 		var tmpTarget = new Vec2( startDir );
@@ -437,7 +548,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 			
 			
 			var hitInfo = this.game.traceV( intPos, currTarget.toInt() );
-			var depth = lineOfSight;
+			var depth = far;
 			if ( hitInfo.hit ) {
 				this.topDown.drawDotV( hitInfo.pos.toInt(), 1,0xFFFF00 );
 				
@@ -448,43 +559,41 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 				// console.log( "d1: " + depth + " d2: " + depth2 );
 			}
 			
-			stripes.push( this.drawWallStripe( i, depth, lineOfSight ) );
+			stripes.push( this.createWallStripe( i, depth, far ) );
 		}
 		
 		this.drawStripes( stripes );
 	};
 	
-	this.frustrumDepth = function ( player, point ) {
-		var tmpD = new Vec2( player.pos );
-		tmpD.sub( point );
-		return VSize( tmpD );
+	this.frustrumDepth = function ( pos, point ) {
+		return pos.dist( point );
 	};
 	
-	this.perpendicularDepth = function ( player, point ) {
-		var right = new Vec2( player.right );
-		right.mult( 10 );
-		right.add( player.pos );
-		return distToLine( point, player.pos, right );
+	this.perpendicularDepth = function ( pos, right, point ) {
+		var tmpRight = new Vec2( right );
+		tmpRight.mult( 10 );
+		tmpRight.add( pos );
+		return distToLine( point, pos, tmpRight );
 	};
 	
-	this.createTargetVec = function ( angle, lineOfSight ) {
+	this.createTargetVec = function ( angle, far ) {
 		var target = new Vec2();
 		target.unitFromAngle( angle );
-		target.mult( lineOfSight );
+		target.mult( far );
 		return target;
 	};
 	
-	this.drawWallStripe = function ( i, depth, lineOfSight ) {
+	this.createWallStripe = function ( i, depth, far ) {
 		
 		//console.log( depth + " , " + RAD_TO_DEG( angle ) + " , "+ fov );	
-		//console.log( i + " , " + depth + " , " + lineOfSight );	
+		//console.log( i + " , " + depth + " , " + far );	
 		var wallColor = new RGBA();
-		wallColor = wallColor.lerp( this.colorFar, this.colorNear, depth / lineOfSight );
+		wallColor = wallColor.lerp( this.colorFar, this.colorNear, depth / far );
 		
 		var width = this.c.width;
 		var height = this.c.height;		
 		
-		var wallHeight = height * this.wallHeight( depth / lineOfSight );
+		var wallHeight = height * this.wallHeight( depth / far );
 		var hStart = justParseInt( ( height - wallHeight ) / 2 );
 		var hEnd = hStart + wallHeight;
 		
@@ -503,7 +612,7 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		var maxWallHeight = this.maxWallHeight;
 		var minWallHeight = this.minWallHeight;
 		//var height = maxWallHeight * ( 1 - depth );
-		var height = maxWallHeight * ( 1 - Math.sin( depth ) ); // works
+		var height = maxWallHeight * ( 1 - Math.sin( depth ) ); // works just hack
 		height = Math.max( height, minWallHeight );
 		
 		//height *= 
@@ -522,6 +631,10 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		var prevStr = stripes[0];
 		for ( var i = 1; i < stripes.length; i++ ) {
 			var currStr = stripes[i];
+			
+			// if ( currStr.depth <= prevStr.depth ) {
+				// currStr.color.mult( 0.8 );
+			// }
 			
 			this.lerpStripeRect( prevStr, currStr );
 			
@@ -593,9 +706,9 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		var pos = player.pos;
 		var intPos = pos.toInt();
 		
-		var lineOfSight = player.lineOfSight;
+		var far = player.far;
 		
-		var target = this.createTargetVec( player.angle, lineOfSight );
+		var target = this.createTargetVec( player.angle, far );
 		target.add( pos );
 		var intTarget = target.toInt();
 		
@@ -633,9 +746,9 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 						// + "tmpD: " + tmpD.toInt() + " d: " + depth );
 						
 			var wallColor = new RGBA();
-			wallColor = wallColor.lerp( colorNear, colorFar, depth / lineOfSight );
+			wallColor = wallColor.lerp( colorNear, colorFar, depth / far );
 						
-			var wallHeight = height * this.wallHeight( depth / lineOfSight );
+			var wallHeight = height * this.wallHeight( depth / far );
 			var hStart = height - wallHeight;
 			var hEnd = wallHeight;
 			
@@ -837,6 +950,36 @@ function VStripe( x, hStart, hEnd, depth, color ) {
 }
 
 
+//		 _____ _     _____                       
+//		/  ___| |   /  __ \                      
+//		\ `--.| |   | /  \/ ___  _ __ ___  _ __  
+//		 `--. \ |   | |    / _ \| '_ ` _ \| '_ \ 
+//		/\__/ / |___| \__/\ (_) | | | | | | |_) |
+//		\____/\_____/\____/\___/|_| |_| |_| .__/ 
+//										  | |    
+//										  |_|  
+//								  
+//=============================================================================
+//	Inner selfs of Entities
+//=============================================================================
+
+function SLComp( player ) {
+
+	this.player = player;
+	
+	this.pos = new Vec2();
+	this.dir = new Vec2();
+	this.right = new Vec2();
+	this.near = 1;
+	this.far = 120;
+	this.fov = 66; //0.66; // plane of camera on dir
+	this.plane = 0.66;
+	
+	// this.fovToPlane = function ( fov ) {
+		// return 2.0 * Math.atan ( 0.5  / near );
+	// }
+
+}
 
 //		 _   _           _____ 
 //		| | | |         / __  \
@@ -978,9 +1121,16 @@ function Vec2 ( foo ) {
 		}
 	}
 	
+	this.dist = function ( o ) {
+		var a = o.x - this.x;
+		var b = o.y - this.y;
+		return Math.sqrt( a * a + b * b );
+	}
+	
 	this.toString = function ( ) {
 		return "(" + this.x + ", " + this.y + ")";
 	}
+	
 }
 
 Vec2.prototype.ZERO = new Vec2( [ 0, 0 ] );

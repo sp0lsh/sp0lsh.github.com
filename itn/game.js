@@ -43,7 +43,8 @@
 //
 //	Content:		remake of Hovertank 3D (id Software) in javascript
 //
-//	Author:			Michał 'spolsh 'Kłoś
+//	Author:			Programmer: Michał 'spolsh 'Kłoś
+//					Designer:	Michał Droń
 //	Email:			michal.m.klos@gmail.com
 //
 //	Framework:		HTML5 Canvas + Bresenham Line drawing algorithm
@@ -76,6 +77,11 @@ function Game () { 'use strict';
 	this.CANVAS_SL_ID = "viewport";
 	this.FPS = 30;
 	this.INTERVAL = 1000 / this.FPS;
+	this.maxFrameSkip = 10;
+	this.ticks = 0,
+	
+	this.updateTimeAvg = 0;
+	this.drawBeginAvg = 0;
 
 
 	/// INPUT
@@ -110,11 +116,14 @@ function Game () { 'use strict';
 	//===========================
 	//   INIT
 	//===========================
-
+	
 	this.map = [];					// actual map
 	this.objs = [];					// gameobjects updated in game
 	this.input = new InputKeys();
 
+	// Stats:
+	this.stats = null;
+	
 	// Engines:
 	this.topDown = null;		// left eye
 	this.scanLine = null;		// right eye
@@ -123,12 +132,18 @@ function Game () { 'use strict';
 		
 		// prepare topdown
 		var canvasTopDown = document.getElementById( this.CANVAS_TD_ID );
-		this.topDown = new TopDown( this, canvasTopDown );
+		if ( canvasTopDown ) {
+			this.topDown = new TopDown( this, canvasTopDown );
+		}
 		
 		// prepare scanline
 		var canvasScanLine = document.getElementById( this.CANVAS_SL_ID );
-		this.scanLine = new ScanLine( this, canvasScanLine );
-		this.scanLine.topDown = this.topDown;
+		if ( canvasScanLine ) {
+			this.scanLine = new ScanLine( this, canvasScanLine );
+		}
+		if ( this.topDown ) {
+			this.scanLine.topDown = this.topDown;
+		}
 		
 	};
 
@@ -236,16 +251,16 @@ function Game () { 'use strict';
 		this.map = this.generateMap( 60, 35 );
 		//this.map = this.generateMap( 5, 5 );
 		this.initPlayer();
+		
+		this.update();
+		
+		//this.setupOnEachFrame( this.run );
 	};
 
 	this.addGameObj = function( gameObj ) {
 		gameObj.game = this;
 		this.objs.push( gameObj );
 	};
-
-	this.addRect = function() {
-		this.entities.push(new Rect());
-	};	
 
 	this.findByName = function ( name ) {
 		
@@ -271,6 +286,8 @@ function Game () { 'use strict';
 		player.color = "#00FF00";
 		
 		this.addGameObj( player );
+		
+		player.update();
 	};
 
 	//===========================
@@ -285,13 +302,13 @@ function Game () { 'use strict';
 	this.checkKey = function ( e ) { 
 		
 		this.input = this.gatherInput( e, this.input );
-		this.controlGame( e, game );
+		this.controlGame( e, this );
 		
 	};
 	
 	this.controlGame = function ( e ) {
-		if ( e.type === game.INPUT_EVENT_TYPE_KEYDOWN ) {
-			if ( e.keyCode === game.INPUT_KEY_ESC ) {
+		if ( e.type === this.INPUT_EVENT_TYPE_KEYDOWN ) {
+			if ( e.keyCode === this.INPUT_KEY_ESC ) {
 				console.log("exit " + Context.intervalId );
 				clearInterval( Context.intervalId );
 			}
@@ -307,38 +324,38 @@ function Game () { 'use strict';
 						// + input.up + ", " 
 						// + input.down );
 		
-		if ( e.type === game.INPUT_EVENT_TYPE_KEYDOWN ) {
-			if ( e.keyCode === game.INPUT_KEY_ARROW_LEFT ) {
+		if ( e.type === this.INPUT_EVENT_TYPE_KEYDOWN ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_LEFT ) {
 				input.left = true;
 			}
 	
-			if ( e.keyCode === game.INPUT_KEY_ARROW_RIGHT ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_RIGHT ) {
 				input.right = true;
 			}
 	
-			if ( e.keyCode === game.INPUT_KEY_ARROW_UP ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_UP ) {
 				input.up = true;
 			}
 	
-			if ( e.keyCode === game.INPUT_KEY_ARROW_DOWN ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_DOWN ) {
 				input.down = true;
 			}
 		}
 		
-		if ( e.type === game.INPUT_EVENT_TYPE_KEYUP ) {
-			if ( e.keyCode === game.INPUT_KEY_ARROW_LEFT ) {
+		if ( e.type === this.INPUT_EVENT_TYPE_KEYUP ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_LEFT ) {
 				input.left = false;
 			}
 	
-			if ( e.keyCode === game.INPUT_KEY_ARROW_RIGHT ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_RIGHT ) {
 				input.right = false;
 			}
 	
-			if ( e.keyCode === game.INPUT_KEY_ARROW_UP ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_UP ) {
 				input.up = false;
 			}
 	
-			if ( e.keyCode === game.INPUT_KEY_ARROW_DOWN ) {
+			if ( e.keyCode === this.INPUT_KEY_ARROW_DOWN ) {
 				input.down = false;
 			}
 		}
@@ -356,6 +373,34 @@ function Game () { 'use strict';
 	//	Update
 	//===========================
 
+	this.run = function () {
+		
+		var updateBegin = Date.now();
+		
+		//console.log( "logic update @ tick " + this.ticks );
+		
+		this.update();
+		this.ticks++;
+		
+		var draws = 0;
+		var drawingTime = 0;
+		var drawBegin = Date.now();
+		do {
+			this.draw();
+			draws++;
+			
+			drawingTime += ( Date.now() - drawBegin );
+		} while ( Date.now() - updateBegin + drawingTime / draws < this.INTERVAL );
+		
+		// stats
+		this.updateTimeAvg = 0.1 * ( Date.now() - updateBegin ) + 0.9 * this.updateTimeAvg;
+		this.drawBeginAvg = 0.1 * drawingTime + 0.9 * this.drawBeginAvg;
+		
+		stats.setText( "draws: " + draws
+						+ " FPS: " + ( 1000 / this.updateTimeAvg ).toFixed( 1 )
+						+ " drawing: " + ( 1000 / this.drawBeginAvg ).toFixed( 1 ) );
+	}
+	
 	this.update = function() {
 	
 		var player = this.findByName( "player" );
@@ -370,7 +415,8 @@ function Game () { 'use strict';
 		for ( var i = 0; i < this.objs.length; i++ ) {
 			this.objs[i].update();
 		}
-	};		
+	};	
+
 
 	//===========================
 	//   Collision
@@ -492,13 +538,19 @@ function Game () { 'use strict';
 	//===========================
 	
 	this.draw = function () {
-	
-		this.topDown.draw();
-		this.scanLine.draw();
+		
+		if ( this.topDown ) {
+			this.topDown.draw();
+		}
+		
+		if ( this.scanLine ) {
+			this.scanLine.draw();
+		}
 	};
 	
 	// Log that everything was ok.
 	console.log( "Game assembled!" );
+	
 }
 
 //
@@ -562,6 +614,7 @@ function InputKeys() {
 function GameObject( name ) {
 	
 	this.game = null;
+	this.slComp = new SLComp( this );
 	
 	this.name = name;
 	this.pos = new Vec2();
@@ -579,7 +632,7 @@ function GameObject( name ) {
 	this.dir = new Vec2();	
 	this.right = new Vec2();	// player has right to live
 	this.turnVel = 0.1;
-	this.lineOfSight = 120;
+	//this.lineOfSight = 120;
 	
 	console.log( "GameObject summoned!" );
 	
@@ -630,6 +683,7 @@ function GameObject( name ) {
 	};
 	
 	this.setAngle = function ( angle ) {
+		
 		this.angle = angle % ( 2 * Math.PI );
 		
 		if ( this.angle < 0 ) {
@@ -643,7 +697,9 @@ function GameObject( name ) {
 	};
 	
 	this.update = function () {
+		
 		this.move();
+		this.updateComp();
 		// console.log("angle:" + this.angle );
 	};
 	
@@ -661,6 +717,15 @@ function GameObject( name ) {
 			this.pos = newPos;
 		}
 	};
+	
+	this.updateComp = function () {
+		
+		this.slComp.pos = this.pos;
+		this.slComp.dir = this.dir;
+		this.slComp.right = this.right;
+	};
+	
+	this.updateComp();
 }
 
 //

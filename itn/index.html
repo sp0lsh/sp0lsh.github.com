@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>inTheNight</title>
+	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+	<script type="text/javascript" charset="utf-8" src="engine.js"></script>
+    <script type="text/javascript" charset="utf-8" src="game.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript" >
+	
+	//=================
+	// Stats
+	//=================
+	
+	function Stats () { 'use strict';
+	
+		this.htmlId = "stats";
+		this.htmlEl = document.getElementById( this.htmlId );
+		
+		this.setText = function ( text ) {
+			this.htmlEl.innerHTML = text;
+		}
+	}
+	
+	//=================
+	// PreInit
+	//=================
+	
+	var game = new Game();
+	
+	//=================
+	// Some stuff to get task done for course
+	//=================
+	
+	function Settings ( w, h ) {
+		this.viewW = w;
+		this.viewH = h;
+	};
+	
+	var settings = new Settings( 320, 200 );
+
+	
+	var canvas1 = " <canvas id=\"" + game.CANVAS_TD_ID + "\" height=\""
+					+ settings.viewH + "\" width=\""
+					+ settings.viewW + "\" style=\"border:1px solid #FF0000;\"></canvas> ";
+	
+	var canvas2 = " <canvas id=\"" + game.CANVAS_SL_ID + "\" height=\""
+					+ settings.viewH + "\" width=\""
+					+ settings.viewW + "\" style=\"border:1px solid #FF0000;\"></canvas> ";
+					
+	document.writeln( canvas1 + canvas2 );
+	// document.writeln( canvas2 );
+	
+	document.write( "<p id=\"stats\"> stats <\p>" );
+	
+	document.write( "<p > Use arrow keys to walk through maze. Not tested on touch devices. <\p>" );
+	
+	//=================
+	// Init
+	//=================
+	
+	var stats = new Stats();
+	
+	game.stats = stats;
+	game.initialize();
+
+  
+	//=================
+	// Input
+	//=================
+  
+	function Input () { 'use strict'; // handle input
+
+		var game = null;
+
+		this.setgame = function ( agame ) {
+			game = agame;
+		};
+			
+		// this will go from HTMLDocument!!!
+		this.checkKey = function ( e ) { 
+				
+			e = e || window.event;
+		
+			if ( game !== null ) { 
+				game.pushEvent( e );
+			}
+		};
+		
+		console.log( "Input set up!" );
+	}
+	
+	var input = new Input();
+	input.setgame( game );
+	document.onkeydown	= input.checkKey;
+	document.onkeyup	= input.checkKey;
+
+	//=================
+	// Update Loop
+	//=================
+  
+	function setupGameOnEachFrame ( game ) {
+		
+		if ( window.webkitRequestAnimationFrame ) {
+		
+			onEachFrame = function( game ) {
+				webkitRequestAnimationFrame( ( function () { return onEachFrame( game ); } ) );
+				game.run();
+			};
+			
+		} else if ( window.mozRequestAnimationFrame ) {
+		
+			onEachFrame = function( game ) {
+				mozRequestAnimationFrame( ( function () { return onEachFrame( game ); } ) );
+				game.run();
+			};
+			
+		} else {
+		
+			onEachFrame = function( game ) {
+				setInterval( game.run(), game.INTERVAL );
+			};
+		}
+		onEachFrame( game );
+	}
+  
+	setupGameOnEachFrame( game );
+  
+	game.start();
+
+    </script>
+  </body>
+</html>
