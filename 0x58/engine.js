@@ -1,4 +1,4 @@
-//====================================================================
+﻿//====================================================================
 // 
 //	Copyright (c) 2013, All Right Reserved, spolsh, triget, antiad
 //
@@ -12,8 +12,8 @@
 //	Content:		remake of Stat Wars vector Atari game
 //
 //	Author:			Programmer: Michał 'spolsh 'Kłoś
-//					Graphics:	Oskar 'triget' Szwajkowski
-//					Designer:	Adam 'antiad' Żółtowski
+//				Graphics:	Oskar 'triget' Szwajkowski
+//				Designer:	Adam 'antiad' Żółtowski
 //
 //	Email:			michal.m.klos@gmail.com
 //
