@@ -157,7 +157,7 @@ Vect.prototype.wallMat = function () {
 	this.ctx.fillStyle = this.CGreen;
 	
 	this.ctx.shadowColor = this.CGreen;
-	//this.ctx.shadowBlur = 10;
+	//this.ctx.shadowBlur = 0;
 }
 
 Vect.prototype.shipMat = function () {
@@ -182,7 +182,8 @@ Vect.prototype.drawWalls = function ( g, walls ) {
 	
 		var a = walls[i].a;
 		
-		this.ctx.shadowBlur = 500 * Math.sqrt( a );
+		// this.ctx.shadowBlur = 500 * Math.sqrt( a );
+		this.ctx.lineWidth = 10 * Math.sqrt( a ) ;
 		
 		// middle interp
 		var lRT = new Vec2();
@@ -222,7 +223,7 @@ Vect.prototype.drawOWalls = function ( g, owalls ) {
 
 		this.ctx.lineWidth = 5.0;
 		
-		this.ctx.shadowBlur = 500 * Math.sqrt( a );
+//		this.ctx.shadowBlur = 500 * Math.sqrt( a );
 		
 		this.ctx.lineWidth = 50 * Math.sqrt( a ) ;
 		
