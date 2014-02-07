@@ -448,7 +448,7 @@ Game.prototype.draw = function ( dt ) {
 	this.v.drawOWalls( this.grid, this.owalls );
 	
 	this.drawGUI();
-	this.drawDebug( dt );
+	//this.drawDebug( dt );
 	
 	this.v.drawMesh( mesh.kokpit , this.p );
 	//	this.v.drawMesh( mesh.dzialka , this.p );
