@@ -11,14 +11,14 @@
 //	Event:			TK Jame Gam vol. 1
 //	Content:		remake of Stat Wars vector Atari game
 //
-//	Author:			Programmer: Michał 'spolsh 'Kłoś
+//	Author:			Programmer: 	Michał 'spolsh 'Kłoś
 //				Graphics:	Oskar 'triget' Szwajkowski
 //				Designer:	Adam 'antiad' Żółtowski
 //
 //	Email:			michal.m.klos@gmail.com
 //
 //	Framework:		HTML5 Canvas 
-//	Date started:	31.01.2014 at 22:00
+//	Date started:		31.01.2014 at 22:00
 // 
 //
 //====================================================================
@@ -157,12 +157,12 @@ Vect.prototype.wallMat = function () {
 	this.ctx.fillStyle = this.CGreen;
 	
 	this.ctx.shadowColor = this.CGreen;
-	//this.ctx.shadowBlur = 10;
+	//this.ctx.shadowBlur = 0;
 }
 
 Vect.prototype.shipMat = function () {
 	
-	this.ctx.lineWidth = 3.0;
+	this.ctx.lineWidth = 6.0;
 	this.ctx.lineCap = "round";
 	this.ctx.lineJoint = "round";
 	
@@ -178,11 +178,12 @@ Vect.prototype.drawWalls = function ( g, walls ) {
 	 
 	this.wallMat();
 	 
-	for ( var i = 0, l = walls.length; i < l; i++ ) {
+	for ( var i = walls.length - 1; i >= 0; i-- ) {
 	
 		var a = walls[i].a;
 		
-		this.ctx.shadowBlur = 500 * Math.sqrt( a );
+		// this.ctx.shadowBlur = 500 * Math.sqrt( a );
+		this.ctx.lineWidth = 10 * Math.sqrt( a ) ;
 		
 		// middle interp
 		var lRT = new Vec2();
@@ -213,14 +214,16 @@ Vect.prototype.drawOWalls = function ( g, owalls ) {
 	var colorAlly = "#00FF00";
 	var colorEnemy = "#FF0000";
 	
-	for ( var i = 0, l = owalls.length; i < l; i++ ) {
+	for ( var i = owalls.length - 1; i >= 0; i-- ) {
 	
 		var a = owalls[i].a;
 	
 		this.ctx.strokeStyle = owalls[i].isAlly ? colorAlly : colorEnemy;
+		this.ctx.shadowColor = owalls[i].isAlly ? colorAlly : colorEnemy;
+
 		this.ctx.lineWidth = 5.0;
 		
-		this.ctx.shadowBlur = 500 * Math.sqrt( a );
+//		this.ctx.shadowBlur = 500 * Math.sqrt( a );
 		
 		this.ctx.lineWidth = 50 * Math.sqrt( a ) ;
 		

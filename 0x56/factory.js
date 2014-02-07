@@ -2,12 +2,12 @@ function Factory ( game ) {
 	
 	this.g = game;
 	
-	this.oSpeed = this.g.conf.eStartSpeed;
-	this.wSpeed = this.g.conf.oStartSpeed;
+	this.oSpeed = this.g.conf.wStartSpeed;
+	this.wSpeed = this.g.conf.wStartSpeed;
 	
 	this.mod = 100;
-	this.wallMod = 40;
-	this.owallMod = 30;
+	this.wallMod = 80;
+	this.owallMod = 60;
 
 }; 
 
@@ -16,14 +16,14 @@ Factory.prototype.update = function ( tick ) {
 	if ( tick % 100 == 0 ) {
 	
 		this.wSpeed += this.g.conf.wSpeedIncr;
-		this.oSpeed += this.g.conf.oSpeedIncr;
+		this.oSpeed += this.g.conf.wSpeedIncr;
 		
-		if ( this.mod > 20 ) {
+		if ( this.mod > 40 ) {
 			this.mod--;
 			this.wallMod--;
 		}
 		
-		if ( this.owallMod > 2 ) {
+		if ( this.owallMod > 20 ) {
 			this.owallMod--;
 		}
 	}
@@ -43,7 +43,7 @@ Factory.prototype.getOWall = function () {
 
 	var owall = new OWall();
 	
-	owall.isAlly = Math.random() > 0.4;
+	owall.isAlly = Math.random() < 0.48;
 	owall.speed = this.wSpeed;
 	owall.typ = Math.round( Math.random() * 5 );
 	console.log( "oWall typ: " + owall.typ );

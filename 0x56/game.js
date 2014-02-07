@@ -451,8 +451,8 @@ Game.prototype.draw = function ( dt ) {
 	//this.drawDebug( dt );
 	
 	this.v.drawMesh( mesh.kokpit , this.p );
-	this.v.drawMesh( mesh.dzialka , this.p );
-	this.v.drawMesh( mesh.celownik  , this.p);
+	//	this.v.drawMesh( mesh.dzialka , this.p );
+	//	this.v.drawMesh( mesh.celownik  , this.p);
 };
 
 Game.prototype.drawGUI = function () {
