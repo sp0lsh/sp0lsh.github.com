@@ -1,0 +1,35 @@
+/* to remove the top and left whitespace */
+* {
+	margin:		0;
+	padding:	0;
+}
+
+/* just to be sure these are full screen*/
+html, body {
+	width:		100%;
+	height:		100%;
+}
+
+/* To remove the scrollbars */
+canvas {
+	display:block;
+}
+
+ .overlay {  
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:1000;
+ }
+
+ .vignette {
+	-webkit-box-shadow: inset 0px 0px 500px rgba(0,0,0,1);
+	-moz-box-shadow:    inset 0px 0px 500px rgba(0,0,0,1);
+	box-shadow:         inset 0px 0px 500px rgba(0,0,0,1);
+	
+	line-height: 0;         /* ensure no space between bottom */
+		
+	display: inline-block;  /* don't go wider than image */
+}
