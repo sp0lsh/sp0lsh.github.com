@@ -625,7 +625,7 @@ function GameObject( name ) {
 	this.vel = new Vec2();
 	
 	// in radians
-	this.angle = 0;
+	this.angle = DEG_TO_RAD( Math.random() * 360 );
 	// in degrees
 	this.fov = 80;
 	

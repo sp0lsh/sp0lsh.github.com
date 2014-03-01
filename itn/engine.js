@@ -397,9 +397,16 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		if ( !player ) {
 			//console.log( "DrawViewport: no player found!" );
 			return;
+		} else {
+			//console.log( "DrawViewport: player found!" );
 		}
 		
 		var comp = player.slComp; // pos, dir, right, fov, near, far
+		
+		this.player = player;
+	
+		//console.log( "comp1: " + comp.player + ", " + comp.pos + ", " + comp.dir + ", " + comp.right + ", " + comp.near + ", " + comp.near + ", " + comp.fov + ", " + comp.plane);
+		//console.log( "comp: " + comp.player + ", " + comp.pos + ", " + comp.dir + ", " + comp.right );
 		
 		//
 		// TEST
@@ -415,27 +422,36 @@ function ScanLine ( aGame, canvas ) { 'use strict';
 		var intPos = pos.toInt();
 		var far = comp.far;
 	
-		var locBeginPlane = new Vec2( comp.dir );
+		var locBeginPlane = new Vec2();
+		locBeginPlane.copy( comp.dir );
 		var tmp = new Vec2( comp.right );
 		tmp.mult( comp.plane );
 		locBeginPlane.add( tmp );
 		
+		 
 		var locEndPlane = new Vec2( comp.dir );
+		locEndPlane.copy( comp.dir );
 		var tmp2 = new Vec2( comp.right );
 		tmp2.mult( -comp.plane );
 		locEndPlane.add( tmp2 );
 		
-		//console.log( locBeginPlane + ", " + locEndPlane );
+		//console.log( "planes: " + locBeginPlane + ", " + locEndPlane );
 		
 		var stripes = [];
 		var alpha = 0;
 		var scans = this.scans;
 		var castDir = new Vec2();
 		var angle;
+		
+		//console.log( "angle: " + angle );
+		
 		for ( var i = 0; i < scans; i++ ) {
 			
 			alpha = 1 - i / scans;
 			angle = ( alpha - 0.5 ) * comp.fov ;
+			
+			//console.log( "angle: " + angle );
+			
 			// console.log( i + " " + angle );
 			//console.log( i + " " + scans + " " + alpha );
 			
