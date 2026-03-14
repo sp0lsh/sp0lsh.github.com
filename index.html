@@ -1,10 +1,117 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>spolsh@github</title>
-	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  </head>
-  <body>
-  
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sp0lsh — Michal Klos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d0d0d; color: #e0e0e0; font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 15px; line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; }
+    a { color: #8ab4f8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: #888; margin-bottom: 2rem; }
+    .links { margin-bottom: 2.5rem; }
+    .links a { margin-right: 1.5rem; }
+    h2 { font-size: 1.1rem; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin: 2.5rem 0 1rem; border-bottom: 1px solid #222; padding-bottom: 0.4rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .card { background: #161616; border: 1px solid #222; border-radius: 6px; overflow: hidden; transition: border-color 0.15s; }
+    .card:hover { border-color: #444; }
+    .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .card-body { padding: 0.75rem 1rem; }
+    .card-title { font-weight: 600; font-size: 0.95rem; }
+    .card-meta { color: #888; font-size: 0.8rem; margin-top: 0.25rem; }
+    .card-links { margin-top: 0.5rem; font-size: 0.8rem; }
+    .card-links a { margin-right: 1rem; }
+    .demos { list-style: none; }
+    .demos li { margin-bottom: 0.5rem; }
+    .demos li a { font-weight: 600; }
+    .demos li span { color: #888; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<h1>Michal Klos</h1>
+<p class="subtitle">CTO @ LEX AI · ex-ByteDance AI Lab · 4K demoscene intros · shaders · Rust/WGPU</p>
+
+<div class="links">
+  <a href="https://linkedin.com/in/mrmichalklos/">LinkedIn</a>
+  <a href="https://x.com/_spolsh">X</a>
+  <a href="https://github.com/sp0lsh">GitHub</a>
+  <a href="https://codeklos.wordpress.com">Blog</a>
+</div>
+
+<h2>4K EXE GFX — .klos / k2</h2>
+<div class="grid">
+
+  <div class="card">
+    <img src="k2_fast_and_fouriers.png" alt="Fast and Fouriers 4K">
+    <div class="card-body">
+      <div class="card-title">Fast and Fouriers</div>
+      <div class="card-meta">4K exe gfx · 3rd at Revision 2023 · Meteorics nomination</div>
+      <div class="card-links">
+        <a href="k2_fast_and_fouriers.zip">Download</a>
+        <a href="https://www.pouet.net/prod.php?which=94605">pouet.net</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="k2_2fast2fouriers.png" alt="2Fast2Fouriers 4K">
+    <div class="card-body">
+      <div class="card-title">2Fast2Fouriers</div>
+      <div class="card-meta">4K exe gfx · 1st at Xenium 2023 · Meteorics nomination</div>
+      <div class="card-links">
+        <a href="k2_2fast2fouriers.zip">Download</a>
+        <a href="https://www.pouet.net/prod.php?which=95188">pouet.net</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="k2_fast_and_fouriers_lauda_drift.png" alt="Lauda Drift 4K">
+    <div class="card-body">
+      <div class="card-title">Fast and Fouriers: Lauda Drift</div>
+      <div class="card-meta">4K exe gfx · 3rd at Deadline 2023</div>
+      <div class="card-links">
+        <a href="k2_fast_and_fouriers_lauda_drift.zip">Download</a>
+        <a href="https://www.pouet.net/prod.php?which=95647">pouet.net</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="k2_quattro_hd.png" alt="Quattro 4K">
+    <div class="card-body">
+      <div class="card-title">Quattro</div>
+      <div class="card-meta">4K exe gfx · 2nd at Revision 2025 · Meteorics nomination</div>
+      <div class="card-links">
+        <a href="k2_quattro.zip">Download</a>
+        <a href="https://www.pouet.net/prod.php?which=97804">pouet.net</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="k2_rwb_hd.png" alt="RWB 4K">
+    <div class="card-body">
+      <div class="card-title">RWB</div>
+      <div class="card-meta">4K exe gfx · 2nd at Deadline 2025</div>
+      <div class="card-links">
+        <a href="k2_rwb.zip">Download</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<h2>Web Demos</h2>
+<ul class="demos">
+  <li><a href="0x56/">0x56</a> <span>— WebGL space shooter</span></li>
+  <li><a href="itn/">In The Night</a> <span>— JavaScript raycasting engine</span></li>
+  <li><a href="snakube/snakube.html">Snakube</a> <span>— Unity3D snake game</span></li>
+  <li><a href="StarWarrior/">Star Warrior</a> <span>— Unity3D game</span></li>
+</ul>
+
+</body>
 </html>
